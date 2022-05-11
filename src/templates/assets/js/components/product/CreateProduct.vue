@@ -167,7 +167,9 @@ export default {
       let ans = arr[0].reduce(function (ans, value) {
         return ans.concat(self.getCombn(arr.slice(1), pre + value + '/'));
       }, []);
-      return ans;
+      return ans;\
+
+
     },
 
     // store product into database
@@ -181,21 +183,21 @@ export default {
         product_variant_prices: this.product_variant_prices
       }
       console.log({product})
-      // axios.post('/product/create-api/', product).then(response => {
-      //   console.log(response.data);
-      // }).catch(error => {
-      //   console.log(error);
-      // })
+      axios.post('/product/create-api/', product).then(response => {
+        console.log(response.data);
+      }).catch(error => {
+        console.log(error);
+      })
 
-      fetch('/product/create-api/', {
-      method: 'POST',
-      headers: {
-       'Accept': 'application/json, text/plain, /',
-       'Content-Type': 'application/json'
-      },
-       body: JSON.stringify(product)
-        }).then(res => res.json())
-        .then(res => console.log(res));
+      // fetch('/product/create-api/', {
+      // method: 'POST',
+      // headers: {
+      //  'Accept': 'application/json, text/plain, /',
+      //  'Content-Type': 'application/json'
+      // },
+      //  body: JSON.stringify(product)
+      //   }).then(res => res.json())
+      //   .then(res => console.log(res));
 
          window.location.href = "/product/list"
          console.log(product);
