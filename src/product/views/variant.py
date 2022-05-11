@@ -1,5 +1,6 @@
+from django.urls import reverse_lazy
 from django.views import generic
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from product.forms import VariantForm
 from product.models import Variant
@@ -39,3 +40,9 @@ class VariantCreateView(BaseVariantView, CreateView):
 
 class VariantEditView(BaseVariantView, UpdateView):
     pk_url_kwarg = 'id'
+
+
+class VariantDeleteView(BaseVariantView,DeleteView):
+    pk_url_kwarg = 'id'
+    template_name = 'variants/variant_confirm_delete.html'
+    success_url = reverse_lazy('product:variants')

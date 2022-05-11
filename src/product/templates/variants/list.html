@@ -12,7 +12,7 @@
         <form action="?" method="get" class="card-header py-3">
             <div class="form-row">
                 <div class="col-md-3">
-                    <input type="text" name="title__icontains" value="{{ request }}" placeholder="Serch"
+                    <input type="text" name="title__icontains" value="{{ request }}" placeholder="Search"
                            class="form-control">
                 </div>
                 <div class="col-md-1">
@@ -41,8 +41,8 @@
                                 <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
                                     <a href="{% url 'product:update.variant' variant.id %}"
                                        class="btn btn-primary">Edit</a>
-                                    <button type="button" class="btn btn-danger">Delete</button>
-                                </div>
+                                    <a href="{% url 'product:delete.variant' variant.id %}"
+                                       class="btn btn-danger">Delete</a></div>
                             </td>
                         </tr>
                     {% endfor %}

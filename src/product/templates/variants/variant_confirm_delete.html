@@ -1,0 +1,24 @@
+{% extends 'backend/base.html' %}
+
+{% block title %} Delete Variant {% endblock %}
+
+{% block content %}
+
+    <div class="row justify-content-center">
+        <form class="col-md-6" method="post" novalidate>
+            {% csrf_token %}
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <p>Are you sure you want to delete {{ object }}?</p>
+                            {{ form }}
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                     <a href="{% url 'product:variants'%}"
+                                       class="btn btn-danger">Cancle</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

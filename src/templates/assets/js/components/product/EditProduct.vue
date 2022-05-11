@@ -5,12 +5,12 @@
         <div class="card shadow mb-4">
           <div class="card-body">
             <div class="form-group">
-              <label for="">Product Name</label>
+              <label for="">Product name</label>
               <input type="text" v-model="product_name" placeholder="Product Name" class="form-control">
             </div>
             <div class="form-group">
               <label for="">Product SKU</label>
-              <input type="text" v-model="product_sku" placeholder="Product SKU" class="form-control">
+              <input type="text" v-model="product_sku" placeholder="Product Name" class="form-control">
             </div>
             <div class="form-group">
               <label for="">Description</label>
@@ -18,6 +18,7 @@
             </div>
           </div>
         </div>
+
         <div class="card shadow mb-4">
           <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-primary">Media</h6>
@@ -27,6 +28,7 @@
           </div>
         </div>
       </div>
+
       <div class="col-md-6">
         <div class="card shadow mb-4">
           <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -59,6 +61,7 @@
           <div class="card-footer" v-if="product_variant.length < variants.length && product_variant.length < 3">
             <button @click="newVariant" class="btn btn-primary">Add another option</button>
           </div>
+
           <div class="card-header text-uppercase">Preview</div>
           <div class="card-body">
             <div class="table-responsive">
@@ -82,22 +85,23 @@
                 </tr>
                 </tbody>
               </table>
+
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button v-on:click="saveProduct" type="submit" class="btn btn-lg btn-primary">Save</button>
+
+    <button @click="saveProduct" type="submit" class="btn btn-lg btn-primary">Save</button>
     <button type="button" class="btn btn-secondary btn-lg">Cancel</button>
+
   </section>
 </template>
-
 
 <script>
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import InputTag from 'vue-input-tag'
-
 export default {
   components: {
     vueDropzone: vue2Dropzone,
@@ -107,13 +111,18 @@ export default {
     variants: {
       type: Array,
       required: true
+    },
+    product: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
-      product_name: '',
-      product_sku: '',
-      description: '',
+      product_name: this.product.title,
+      product_sku: this.product.sku,
+      description: this.product.description,
+      isError: false,
       images: [],
       product_variant: [
         {
@@ -126,7 +135,8 @@ export default {
         url: 'https://httpbin.org/post',
         thumbnailWidth: 150,
         maxFilesize: 0.5,
-        headers: {"My-Awesome-Header": "header value"}
+        headers: {"My-Awesome-Header": "header value"},
+        addRemoveLinks: true
       }
     }
   },
@@ -169,39 +179,40 @@ export default {
       }, []);
       return ans;
     },
-
+    formValidation() {
+      if(this.product_name === ""){
+        this.isError=true;
+        this.$toast("Name is required")
+      }
+      else if(this.product_sku === "") {
+        this.isError = true;
+        this.$toast("SKU is required")
+      }
+      else if(this.product_sku !== "" && this.product_name !== ""){
+        this.isError = false;
+      }
+    },
     // store product into database
     saveProduct() {
-      let product = {
-        title: this.product_name,
-        sku: this.product_sku,
-        description: this.description,
-        product_image: this.$refs.myVueDropzone.getAcceptedFiles(),
-        product_variant: this.product_variant,
-        product_variant_prices: this.product_variant_prices
-      }
-      console.log({product})
-      // axios.post('/product/create-api/', product).then(response => {
-      //   console.log(response.data);
-      // }).catch(error => {
-      //   console.log(error);
-      // })
-
-      fetch('/product/create-api/', {
-      method: 'POST',
-      headers: {
-       'Accept': 'application/json, text/plain, /',
-       'Content-Type': 'application/json'
-      },
-       body: JSON.stringify(product)
-        }).then(res => res.json())
-        .then(res => console.log(res));
-
-         window.location.href = "/product/list"
-         console.log(product);
+        this.formValidation()
+        if(!this.isError){
+          let product = {
+          title: this.product_name,
+          sku: this.product_sku,
+          description: this.description,
+          product_image: this.$refs.myVueDropzone.getAcceptedFiles(),
+          product_variant: this.product_variant,
+          product_variant_prices: this.product_variant_prices
+        }
+        axios.post(`/product/edit/${this.product.id}/`, product).then(response => {
+          console.log(response.data);
+        }).catch(error => {
+          console.log(error);
+        })
+        window.location.href = "/product/list"
+        console.log(product);
+        }
     }
-
-
   },
   mounted() {
     console.log('Component mounted.')
