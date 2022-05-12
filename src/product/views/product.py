@@ -128,3 +128,48 @@ class ProductView(TemplateView):
         }
         return context
 
+
+class ProductEditView(View):
+
+    def get(self, request, id):
+        product = Product.objects.prefetch_related("variant_price").filter(id=id)
+        # variants = product.prefetch_related("variants").variants.all()
+        variants_stock = []
+        variants_price = []
+        variant_price = product.first().variant_price.all()
+        variants_price_obj = []
+        for vp in variant_price:
+            variants_stock.append(vp.stock)
+            variants_price.append(vp.price)
+
+        p_variants = product.first().variants.all()
+        variants = Variant.objects.filter(active=True).values('id', 'title')
+        context = {
+            "product": list(product.values("id", "title", "sku", "description"))[0],
+            "variants_price": variants_price,
+            "variants": list(variants)
+
+        }
+        return render(request, 'products/edit.html', context)
+
+    @method_decorator(csrf_exempt, name="post")
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, id, **kwargs):
+        data = json.loads(self.request.body)
+        product = Product.objects.prefetch_related("variant_price").filter(id=id).first()
+        product_data = {
+            "title": data.get("title", None),
+            "sku": data.get("sku", None),
+            "description": data.get("description", None),
+        }
+        product.title = product_data['title']
+        product.sku = product_data['sku']
+        product.description = product_data['description']
+        product.save()
+
+        return redirect('list.product')
+
+
+
